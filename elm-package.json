@@ -1,7 +1,7 @@
 {
     "version": "1.0.0",
     "summary": "A go like game",
-    "repository": "https://github.com/hakantunc/nokta/",
+    "repository": "https://github.com/hakantunc/nokta.git",
     "license": "MIT",
     "source-directories": [
         "."

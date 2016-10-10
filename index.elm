@@ -1,5 +1,6 @@
 import Html.App as App
 import Html exposing (..)
+import Html.Events exposing (onClick)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
 
@@ -13,18 +14,25 @@ main =
 -- MODEL
 
 type Point = Blank | White | Black
-type alias Model = List (Point,Int)
+type Player = WhitePlayer | BlackPlayer
+type alias Model =
+  { board : List (Point,Int)
+  , turn : Player
+  }
 
-size = 7
-space = 50
+size = 11
+radius = 20
+space = radius*3
+boardwidth = (size+1) * space
+lengthstr = toString boardwidth
 states = List.repeat size Blank
 positions = List.scanl (\_ acc->acc+space) space (List.repeat (size-1) 0)
 model : Model
-model = List.map2 (,) states positions
+model = {board = List.map2 (,) states positions, turn = WhitePlayer}
 
 -- UPDATE
 
-type Msg = Name String
+type Msg = Update Int
 
 update : Msg -> Model -> Model
 update msg model = model
@@ -33,11 +41,13 @@ update msg model = model
 
 view : Model -> Html Msg
 view model =
-  div [] [ board ]
+  div [] [ div [] [Html.text ("Whose turn?¿: " ++ (toString model.turn))]
+         , board model.board
+         ]
 
-board = Svg.svg
-       [ width "480", height "480", viewBox "0 0 480 480" ]
-       (List.map cc model)
+board brd = Svg.svg
+       [ width lengthstr, height lengthstr, viewBox ("0 0 " ++ lengthstr ++ " " ++ lengthstr) ]
+       (List.map cc brd)
 
 cc (stt,pos) =
   let 
@@ -45,4 +55,4 @@ cc (stt,pos) =
     Blank -> "gray"
     White -> "yellow"
     Black -> "black"
-  in circle [ fill clr, stroke "black", cx (toString pos), cy "60", r "20" ] []
+  in circle [ onClick (Update pos), fill clr, stroke "black", cx (toString pos), cy "60", r (toString radius) ] []
